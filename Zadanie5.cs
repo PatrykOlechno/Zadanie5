@@ -9,15 +9,14 @@ namespace projekt
         {
             var naszaFirma = new FirmaLotnicza();
             var lotnisko1 = new Lotnisko("Gdansk", 54.366667, 18.633333);
-            var lotnisko2 = new Lotnisko("Gdansk", 54.466667, 17.016667);
+            var lotnisko2 = new Lotnisko("Slupsk", 54.466667, 17.016667);
 
-            Console.WriteLine(lotnisko1.policzOdleglosc(54.366667, 18.633333, 54.466667, 17.016667) ); 
             
             naszaFirma.dodajSamolot("Boeing", 100, 3000, 12345);
             naszaFirma.dodajSamolot("Boeing 645", 234, 2000, 2345);
 
-            naszaFirma.dodajLot(1, "Poznań", "Warszawa", 140, "20/12/2021", "11:00", naszaFirma.samoloty[0]);
-            naszaFirma.dodajLot(1, "Krakow", "Bialystok", 100, "01/02/2022", "13:00", naszaFirma.samoloty[1]);
+            naszaFirma.dodajLot(1, lotnisko2, lotnisko1, 140, "20 /12/2021", "11:00", naszaFirma.samoloty[0]);
+            naszaFirma.dodajLot(1, lotnisko1, lotnisko2, 100, "01/02/2022", "13:00", naszaFirma.samoloty[1]);
             
             naszaFirma.usunSamolot(12345);
 
@@ -68,8 +67,8 @@ namespace projekt
             }
 
             public int dodajLot(int numer_lotu,
-                    string z_lotniska,
-                    string do_lotniska,
+                    Lotnisko z_lotniska,
+                    Lotnisko do_lotniska,
                     float cena,
                     string data,
                     string godzina,
@@ -134,16 +133,17 @@ namespace projekt
         public class Lot
         {
             public int numer_lotu;
-            public string z_lotniska;
-            public string do_lotniska;
+            public Lotnisko z_lotniska;
+            public Lotnisko do_lotniska;
+            public double odleglosc;
             public float cena;
             public string data;
             public string godzina;
             public Samolot samolot;
 
             public Lot(int numer_lotu, 
-                    string z_lotniska,
-                    string do_lotniska,
+                    Lotnisko z_lotniska,
+                    Lotnisko do_lotniska,
                     float cena,
                     string data,
                     string godzina,
@@ -156,13 +156,26 @@ namespace projekt
                     this.data = data;
                     this.godzina = godzina;
                     this.samolot = samolot;
+
+                policzOdleglosc();
             }
+
+            public void policzOdleglosc()
+            {
+                double stopnie1 = z_lotniska.stopnie;
+                double stopnie2 = do_lotniska.stopnie;
+                double minuty1 = z_lotniska.minuty;
+                double minuty2 = do_lotniska.minuty;
+                this.odleglosc = Math.Round(Math.Sqrt(Math.Pow(stopnie2 - stopnie1, 2) + Math.Pow((Math.Cos((stopnie1 * Math.PI) / 180) * (minuty2 - minuty1)), 2)) * ((40075.704) / 360));
+            }
+
             public override string ToString()
             {
                 return $"Informacja o locie: \n" +
                     $"ID: {numer_lotu}\n" +
                     $"Z: {z_lotniska}\n" +
                     $"DO: {do_lotniska}\n" +
+                    $"Odleglosc: {odleglosc}\n" +
                     $"Data: {data}\n" +
                     $"Godzina: {godzina}\n" +
                     $"Cena: {cena}\n" +
@@ -172,9 +185,9 @@ namespace projekt
 
         public class Lotnisko
         {
-            public string nazwaLotniska;
-            public double stopnie;
-            public double minuty; //polozenie geograficzne
+            public  string nazwaLotniska;
+            public  double stopnie;
+            public  double minuty; //polozenie geograficzne
 
             public Lotnisko(string nazwaLotniska, double stopnie, double minuty)
             {
@@ -182,11 +195,10 @@ namespace projekt
                 this.stopnie = stopnie;
                 this.minuty = minuty;
             }
-            public double policzOdleglosc(double stopnie1, double minuty1, double stopnie2, double minuty2)
+
+            public override string ToString()
             {
-                double odleglosc;
-                odleglosc = Math.Round(Math.Sqrt(Math.Pow(stopnie2 - stopnie1,2) + Math.Pow((Math.Cos((stopnie1 * Math.PI) /180)* (minuty2-minuty1)),2)  ) * ((40075.704)/360));
-                return odleglosc;
+                return $"{nazwaLotniska}. Polozenie: {stopnie}° {minuty}′";
             }
         }
     }
