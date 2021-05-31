@@ -11,25 +11,29 @@ namespace projekt
             var lotnisko1 = new Lotnisko("Gdansk", 54.366667, 18.633333);
             var lotnisko2 = new Lotnisko("Slupsk", 54.466667, 17.016667);
 
-            
-            naszaFirma.dodajSamolot("Boeing", 100, 3000, 12345);
-            naszaFirma.dodajSamolot("Boeing 645", 234, 2000, 2345);
+            naszaFirma.dodajSamolot("Boeing 645", 1, 2000, 2345);
 
-            naszaFirma.dodajLot(1, lotnisko2, lotnisko1, 140, "20 /12/2021", "11:00", naszaFirma.samoloty[0]);
-            naszaFirma.dodajLot(1, lotnisko1, lotnisko2, 100, "01/02/2022", "13:00", naszaFirma.samoloty[1]);
-            
-            naszaFirma.usunSamolot(12345);
+            naszaFirma.dodajLot(1, lotnisko2, lotnisko1, 10, "20 /12/2021", "11:00", naszaFirma.samoloty[0]);
+            naszaFirma.dodajLot(1, lotnisko1, lotnisko2, 5, "01/02/2022", "13:00", naszaFirma.samoloty[0]);
 
-            naszaFirma.wyświetlSamoloty();
+            naszaFirma.dodajPosrednika("RAJANER", "Warszawa 1234");
+            naszaFirma.dodajPosrednika("Flyfast", "Bialystk Ogrodowa 4");
+
+            naszaFirma.wyswietlPosrednikow();
+
+            /*naszaFirma.wyświetlSamoloty();
             naszaFirma.wyświetlLoty();
-            naszaFirma.wyświetlSamoloty();
+            naszaFirma.wyświetlSamoloty();*/
         }
 
         public class FirmaLotnicza
         {
             public List<Samolot> samoloty = new List<Samolot>();
             public List<Lot> loty = new List<Lot>();
+            public List<Bilet> bilety = new List<Bilet>();
+            public List<Posrednik> sprzedawcy = new List<Posrednik>();
 
+            /*Zarządzanie samolotami*/
             public int dodajSamolot(string typ, int liczba_miejsc, int zasieg, int numer_seryjny)
             {
                 try
@@ -51,12 +55,12 @@ namespace projekt
                     samoloty.RemoveAll(s => s.numer_seryjny == _numer_seryjny);
                     return 1;
                 }
-                catch (Exception e )
+                catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
                     return 0;
                 }
-                
+
             }
             public void wyświetlSamoloty()
             {
@@ -65,7 +69,7 @@ namespace projekt
                     Console.WriteLine(samolot);
                 }
             }
-
+            /*Zarządzanie lotami*/
             public int dodajLot(int numer_lotu,
                     Lotnisko z_lotniska,
                     Lotnisko do_lotniska,
@@ -107,7 +111,63 @@ namespace projekt
                     Console.WriteLine(lot);
                 }
             }
+            /*Zarządzanie kupującymi */
+            public bool biletJestDostepny(Lot lot)
+            {
+                return lot.samolot.liczba_miejsc > bilety.Count;
+            }
+            public Bilet rezerwojBilet(Lot lot, string imie, string nazwisko)
+            {
+                if (biletJestDostepny(lot))
+                {
+                    var bilet = new Bilet(imie, nazwisko, lot);
+                    bilety.Add(bilet);
+                    return bilet;
+                }
+                else
+                {
+                    Console.WriteLine("Brak miejsc");
+                }
+                return null;
+            }
 
+            /*Zarządzanie pośrednikami*/
+            public int dodajPosrednika(string nazwa, string adres)
+            {
+                try
+                {
+                    var posrednik = new Posrednik(nazwa, adres);
+                    sprzedawcy.Add(posrednik);
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return 0;
+                }
+            }
+
+            public int UsunPosrednika(string nazwa)
+            {
+                try
+                {
+                    sprzedawcy.RemoveAll(s => s.nazwa == nazwa);
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return 0;
+                }
+            }
+
+            public void wyswietlPosrednikow()
+            {
+                foreach (Posrednik posrednik in sprzedawcy)
+                {
+                    Console.WriteLine(posrednik);
+                }
+            }
         }
         public class Samolot
         {
@@ -115,7 +175,7 @@ namespace projekt
             public int liczba_miejsc;
             public int zasieg;
             public int numer_seryjny;
-            
+
             public Samolot(string typ, int liczba_miejsc, int zasieg, int numer_seryjny)
             {
                 this.typ = typ;
@@ -136,28 +196,30 @@ namespace projekt
             public Lotnisko z_lotniska;
             public Lotnisko do_lotniska;
             public double odleglosc;
-            public float cena;
+            public double cenaZaKilometr;
+            public double cena;
             public string data;
             public string godzina;
             public Samolot samolot;
 
-            public Lot(int numer_lotu, 
+            public Lot(int numer_lotu,
                     Lotnisko z_lotniska,
                     Lotnisko do_lotniska,
-                    float cena,
+                    float cenaZaKilometr,
                     string data,
                     string godzina,
                     Samolot samolot)
             {
-                    this.numer_lotu = numer_lotu;
-                    this.z_lotniska = z_lotniska;
-                    this.do_lotniska = do_lotniska;
-                    this.cena = cena;
-                    this.data = data;
-                    this.godzina = godzina;
-                    this.samolot = samolot;
+                this.numer_lotu = numer_lotu;
+                this.z_lotniska = z_lotniska;
+                this.do_lotniska = do_lotniska;
+                this.cenaZaKilometr = cenaZaKilometr;
+                this.data = data;
+                this.godzina = godzina;
+                this.samolot = samolot;
 
                 policzOdleglosc();
+                policzCene();
             }
 
             public void policzOdleglosc()
@@ -167,6 +229,11 @@ namespace projekt
                 double minuty1 = z_lotniska.minuty;
                 double minuty2 = do_lotniska.minuty;
                 this.odleglosc = Math.Round(Math.Sqrt(Math.Pow(stopnie2 - stopnie1, 2) + Math.Pow((Math.Cos((stopnie1 * Math.PI) / 180) * (minuty2 - minuty1)), 2)) * ((40075.704) / 360));
+            }
+
+            public void policzCene()
+            {
+                this.cena = this.cenaZaKilometr * this.odleglosc;
             }
 
             public override string ToString()
@@ -185,9 +252,9 @@ namespace projekt
 
         public class Lotnisko
         {
-            public  string nazwaLotniska;
-            public  double stopnie;
-            public  double minuty; //polozenie geograficzne
+            public string nazwaLotniska;
+            public double stopnie;
+            public double minuty; //polozenie geograficzne
 
             public Lotnisko(string nazwaLotniska, double stopnie, double minuty)
             {
@@ -201,5 +268,59 @@ namespace projekt
                 return $"{nazwaLotniska}. Polozenie: {stopnie}° {minuty}′";
             }
         }
+
+        public class Bilet
+        {
+            public int id;
+            public string imie;
+            public string nazwisko;
+            public Lot lot;
+
+            public Bilet() { }
+            public Bilet(string imie, string nazwisko, Lot lot)
+            {
+                this.id = this.GetHashCode();
+                this.imie = imie;
+                this.nazwisko = nazwisko;
+                this.lot = lot;
+            }
+            public override string ToString()
+            {
+                return $"Bilet:\n" +
+                    $"ID: {id}\n" +
+                    $"Imie: {imie}\n" +
+                    $"Nazwisko: {nazwisko}\n" +
+                    $"Cena: {lot.cena}\n" +
+                    $"Data: {lot.data} {lot.godzina}\n" +
+                    $"Z {lot.z_lotniska} do {lot.do_lotniska}\n";
+            }
+        }
+        public abstract class Kupujacy
+        {
+            public string nazwa;
+            public string adres;
+
+            public Kupujacy() { }
+            public Kupujacy(string nazwa)
+            {
+                this.nazwa = nazwa;
+            }
+
+        }
+        public class Posrednik : Kupujacy
+        {
+
+            public Posrednik(string nazwa, string adres)
+            {
+                this.nazwa = nazwa;
+                this.adres = adres;
+            }
+
+            public override string ToString()
+            {
+                return $"{nazwa} \n {adres}";
+            }
+        }
+
     }
 }
