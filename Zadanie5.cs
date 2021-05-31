@@ -10,15 +10,24 @@ namespace projekt
             var naszaFirma = new FirmaLotnicza();
             var lotnisko1 = new Lotnisko("Gdansk", 54.366667, 18.633333);
             var lotnisko2 = new Lotnisko("Slupsk", 54.466667, 17.016667);
+            var andrzej = new Klient("Andzrej", "wysokcki", "124234", "q2w34r2we");
+            var michal = new Klient("michal", "Markos", "122345564234", "345364");
+            var antek = new Klient("antek", "Wysafn", "2356", "43567");
 
-            naszaFirma.dodajSamolot("Boeing 645", 1, 2000, 2345);
+            naszaFirma.dodajSamolot("Boeing 645", 4, 2000, 2345);
 
             naszaFirma.dodajLot(1, lotnisko2, lotnisko1, 10, "20 /12/2021", "11:00", naszaFirma.samoloty[0]);
             naszaFirma.dodajLot(1, lotnisko1, lotnisko2, 5, "01/02/2022", "13:00", naszaFirma.samoloty[0]);
 
-            naszaFirma.dodajPosrednika("RAJANER", "Warszawa 1234");
-            naszaFirma.dodajPosrednika("Flyfast", "Bialystk Ogrodowa 4");
+            naszaFirma.dodajPosrednika("RAJANER", "Warszawa 1234", "12345234");
+            naszaFirma.dodajPosrednika("Flyfast", "Bialystk Ogrodowa 4", "1241234234");
 
+            naszaFirma.rezerwojBilet(naszaFirma.loty[0], naszaFirma.sprzedawcy[0], andrzej);
+            naszaFirma.rezerwojBilet(naszaFirma.loty[1], michal);
+            naszaFirma.rezerwojBilet(naszaFirma.loty[0], antek);
+
+            naszaFirma.wyswietlZarezerwowaneBilety();
+            naszaFirma.UsunPosrednika("RAJANER");
             naszaFirma.wyswietlPosrednikow();
 
             /*naszaFirma.wyświetlSamoloty();
@@ -116,11 +125,11 @@ namespace projekt
             {
                 return lot.samolot.liczba_miejsc > bilety.Count;
             }
-            public Bilet rezerwojBilet(Lot lot, string imie, string nazwisko)
+            public Bilet rezerwojBilet(Lot lot, Posrednik posrednik, Klient klient)
             {
                 if (biletJestDostepny(lot))
                 {
-                    var bilet = new Bilet(imie, nazwisko, lot);
+                    var bilet = new Bilet(posrednik, klient, lot);
                     bilety.Add(bilet);
                     return bilet;
                 }
@@ -130,13 +139,33 @@ namespace projekt
                 }
                 return null;
             }
-
+            public Bilet rezerwojBilet(Lot lot, Klient klient)
+            {
+                if (biletJestDostepny(lot))
+                {
+                    var bilet = new Bilet(klient, lot);
+                    bilety.Add(bilet);
+                    return bilet;
+                }
+                else
+                {
+                    Console.WriteLine("Brak miejsc");
+                }
+                return null;
+            }
+            public void wyswietlZarezerwowaneBilety()
+            {
+                foreach (Bilet bilet in bilety)
+                {
+                    Console.WriteLine(bilet);
+                }
+            }
             /*Zarządzanie pośrednikami*/
-            public int dodajPosrednika(string nazwa, string adres)
+            public int dodajPosrednika(string nazwa, string adres, string NIP)
             {
                 try
                 {
-                    var posrednik = new Posrednik(nazwa, adres);
+                    var posrednik = new Posrednik(nazwa, adres, NIP);
                     sprzedawcy.Add(posrednik);
                     return 1;
                 }
@@ -272,24 +301,31 @@ namespace projekt
         public class Bilet
         {
             public int id;
-            public string imie;
-            public string nazwisko;
+            public Posrednik posrednik;
+            public Klient klient;
             public Lot lot;
 
             public Bilet() { }
-            public Bilet(string imie, string nazwisko, Lot lot)
+            /* Konstruktor dla klienta indywidualnego*/
+            public Bilet(Klient klient, Lot lot)
             {
                 this.id = this.GetHashCode();
-                this.imie = imie;
-                this.nazwisko = nazwisko;
+                this.klient = klient;
+                this.lot = lot;
+            }
+            /* Konstruktor dla posrednika*/
+            public Bilet(Posrednik posrednik, Klient klient, Lot lot)
+            {
+                this.posrednik = posrednik;
+                this.klient = klient;
                 this.lot = lot;
             }
             public override string ToString()
             {
                 return $"Bilet:\n" +
                     $"ID: {id}\n" +
-                    $"Imie: {imie}\n" +
-                    $"Nazwisko: {nazwisko}\n" +
+                    $"Imie: {klient.imie}\n" +
+                    $"Nazwisko: {klient.nazwisko}\n" +
                     $"Cena: {lot.cena}\n" +
                     $"Data: {lot.data} {lot.godzina}\n" +
                     $"Z {lot.z_lotniska} do {lot.do_lotniska}\n";
@@ -301,26 +337,48 @@ namespace projekt
             public string adres;
 
             public Kupujacy() { }
-            public Kupujacy(string nazwa)
-            {
-                this.nazwa = nazwa;
-            }
-
-        }
-        public class Posrednik : Kupujacy
-        {
-
-            public Posrednik(string nazwa, string adres)
+            public Kupujacy(string nazwa, string adres)
             {
                 this.nazwa = nazwa;
                 this.adres = adres;
             }
 
+        }
+        public class Posrednik : Kupujacy
+        {
+            public string NIP;
+            public Posrednik(string nazwa, string adres, string NIP)
+            {
+                this.nazwa = nazwa;
+                this.adres = adres;
+                this.NIP = NIP;
+            }
+
             public override string ToString()
             {
-                return $"{nazwa} \n {adres}";
+                return $"{nazwa} {adres} \n {NIP}";
             }
         }
+        public class Klient : Kupujacy
+        {
+            public string numerKarty;
+            public string imie;
+            public string nazwisko;
+            public string PESEL;
 
+            public Klient(string imie, string nazwisko, string numerKarty, string PESEL)
+            {
+                this.imie = imie;
+                this.nazwisko = nazwisko;
+                this.numerKarty = numerKarty;
+                this.PESEL = PESEL;
+            }
+            public override string ToString()
+            {
+                return $"Dane klienta: {imie} {nazwisko}" +
+                     $"nr karty: {numerKarty}" +
+                     $"nr PESEL: {PESEL}"; 
+            }
+        }
     }
 }
