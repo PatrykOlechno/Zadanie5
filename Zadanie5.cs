@@ -7,32 +7,21 @@ namespace projekt
     {
         static void Main(string[] args)
         {
-            var naszaFirma = new FirmaLotnicza();
-            var lotnisko1 = new Lotnisko("Gdansk", 54.366667, 18.633333);
-            var lotnisko2 = new Lotnisko("Slupsk", 54.466667, 17.016667);
-            var andrzej = new Klient("Andzrej", "wysokcki", "124234", "q2w34r2we");
-            var michal = new Klient("michal", "Markos", "122345564234", "345364");
-            var antek = new Klient("antek", "Wysafn", "2356", "43567");
+            var firma = new FirmaLotnicza();
+            firma.dodajLotnisko("Ragsdale Road Airport", -85.95359802246094, 35.515899658203125);
+            firma.dodajLotnisko("San Jacinto Methodist Hospital Heliport", -94.980201, 29.7377);
+            firma.usunLotnisko("Ragsdale Road Airprt"); 
+            firma.wyswietlLotniska();
 
-            naszaFirma.dodajSamolot("Boeing 645", 4, 2000, 2345);
+            (string nazwaLotniska, double stopnie, double minuty)[] lotniska = new[] { 
+                ("Ragsdale Road Airport", -85.95359802246094, 35.515899658203125), ("Rybolt Ranch Airport", -81.14420318603516, 28.589399337768555), 
+                ("San Jacinto Methodist Hospital Heliport", -94.980201, 29.7377), ("Pickles Airport", -77.9250030518, 39.125),
+                ("Sahoma Lake Airport", -96.1613998413086, 36.04119873046875), ("Brunner Airport", -88.28759765625, 42.13610076904297),
+                ("Nez Perce Municipal Airport", -116.24299621582031, 46.23740005493164), ("Prichard Airstrip", -97.11699676513672, 38.900001525878906),
+                ("Delphi Municipal Airport", -86.68170166015625, 40.54280090332031), ("Hendry County Fire-Ems Heliport", -81.42859649658203, 26.746400833129883)
+            };
 
-            naszaFirma.dodajLot(1, lotnisko2, lotnisko1, 10, "20 /12/2021", "11:00", naszaFirma.samoloty[0]);
-            naszaFirma.dodajLot(1, lotnisko1, lotnisko2, 5, "01/02/2022", "13:00", naszaFirma.samoloty[0]);
-
-            naszaFirma.dodajPosrednika("RAJANER", "Warszawa 1234", "12345234");
-            naszaFirma.dodajPosrednika("Flyfast", "Bialystk Ogrodowa 4", "1241234234");
-
-            naszaFirma.rezerwojBilet(naszaFirma.loty[0], naszaFirma.sprzedawcy[0], andrzej);
-            naszaFirma.rezerwojBilet(naszaFirma.loty[1], michal);
-            naszaFirma.rezerwojBilet(naszaFirma.loty[0], antek);
-
-            naszaFirma.wyswietlZarezerwowaneBilety();
-            naszaFirma.UsunPosrednika("RAJANER");
-            naszaFirma.wyswietlPosrednikow();
-
-            /*naszaFirma.wyświetlSamoloty();
-            naszaFirma.wyświetlLoty();
-            naszaFirma.wyświetlSamoloty();*/
+            
         }
 
         public class FirmaLotnicza
@@ -40,14 +29,55 @@ namespace projekt
             public List<Samolot> samoloty = new List<Samolot>();
             public List<Lot> loty = new List<Lot>();
             public List<Bilet> bilety = new List<Bilet>();
-            public List<Posrednik> sprzedawcy = new List<Posrednik>();
+            public List<Posrednik> posrednicy = new List<Posrednik>();
+            public List<Klient> klienci = new List<Klient>();
+            public List<Lotnisko> lotniska = new List<Lotnisko>();
+            
+            /*Zarządzanie lotniskami*/
+            public int generujLoty()
+            {
 
-            /*Zarządzanie samolotami*/
-            public int dodajSamolot(string typ, int liczba_miejsc, int zasieg, int numer_seryjny)
+            }
+
+            public int dodajLotnisko(string nazwa, double stopnie, double minuty)
             {
                 try
                 {
-                    Samolot nowy_samolot = new Samolot(typ, liczba_miejsc, zasieg, numer_seryjny);
+                    Lotnisko lotnisko = new Lotnisko(nazwa, stopnie, minuty);
+                    lotniska.Add(lotnisko); 
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return 0;
+                }
+            }
+            public int usunLotnisko(string nazwa)
+            {
+                if ( lotniska.RemoveAll(s => s.nazwaLotniska == nazwa) != 0)
+                {
+                    Console.WriteLine("Pomyslnie usunieto");
+                }
+                else
+                {
+                    Console.WriteLine("Blad podczas usuwania");
+                }
+                return lotniska.RemoveAll(s => s.nazwaLotniska == nazwa);
+            }
+            public void wyswietlLotniska()
+            {
+                foreach (Lotnisko lotnisko in lotniska)
+                {
+                    Console.WriteLine(lotnisko);
+                }
+            }
+            /*Zarządzanie samolotami*/
+            public int dodajSamolot(string typ, int liczba_miejsc, int zasieg, int numer_seryjny, int predkosc)
+            {
+                try
+                {
+                    Samolot nowy_samolot = new Samolot(typ, liczba_miejsc, zasieg, numer_seryjny, predkosc);
                     samoloty.Add(nowy_samolot);
                     return 1;
                 }
@@ -84,12 +114,13 @@ namespace projekt
                     Lotnisko do_lotniska,
                     float cena,
                     string data,
+                    double czas,
                     string godzina,
                     Samolot samolot)
             {
                 try
                 {
-                    var lot = new Lot(numer_lotu, z_lotniska, do_lotniska, cena, data, godzina, samolot);
+                    var lot = new Lot(numer_lotu, z_lotniska, do_lotniska, cena, data, czas, godzina, samolot);
                     loty.Add(lot);
                     return 1;
                 }
@@ -125,20 +156,6 @@ namespace projekt
             {
                 return lot.samolot.liczba_miejsc > bilety.Count;
             }
-            public Bilet rezerwojBilet(Lot lot, Posrednik posrednik, Klient klient)
-            {
-                if (biletJestDostepny(lot))
-                {
-                    var bilet = new Bilet(posrednik, klient, lot);
-                    bilety.Add(bilet);
-                    return bilet;
-                }
-                else
-                {
-                    Console.WriteLine("Brak miejsc");
-                }
-                return null;
-            }
             public Bilet rezerwojBilet(Lot lot, Klient klient)
             {
                 if (biletJestDostepny(lot))
@@ -166,7 +183,7 @@ namespace projekt
                 try
                 {
                     var posrednik = new Posrednik(nazwa, adres, NIP);
-                    sprzedawcy.Add(posrednik);
+                    posrednicy.Add(posrednik);
                     return 1;
                 }
                 catch (Exception e)
@@ -180,7 +197,43 @@ namespace projekt
             {
                 try
                 {
-                    sprzedawcy.RemoveAll(s => s.nazwa == nazwa);
+                    posrednicy.RemoveAll(s => s.nazwa == nazwa);
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return 0;
+                }
+            }
+            public Bilet rezerwojBilet(Lot lot, Posrednik posrednik, Klient klient)
+            {
+                if (biletJestDostepny(lot))
+                {
+                    var bilet = new Bilet(posrednik, klient, lot);
+                    bilety.Add(bilet);
+                    return bilet;
+                }
+                else
+                {
+                    Console.WriteLine("Brak miejsc");
+                }
+                return null;
+            }
+            public void wyswietlPosrednikow()
+            {
+                foreach (Posrednik posrednik in posrednicy)
+                {
+                    Console.WriteLine(posrednik);
+                }
+            }
+            /*Zarządzanie Klientami*/
+            public int dodajKlienta(string nazwisko,string imie, string numerKarty, string PESEL)
+            {
+                try
+                {
+                    var klient = new Klient(imie, nazwisko, numerKarty, PESEL);
+                    klienci.Add(klient);
                     return 1;
                 }
                 catch (Exception e)
@@ -190,11 +243,25 @@ namespace projekt
                 }
             }
 
-            public void wyswietlPosrednikow()
+            public int UsunKlienta(string PESEL)
             {
-                foreach (Posrednik posrednik in sprzedawcy)
+                try
                 {
-                    Console.WriteLine(posrednik);
+                    klienci.RemoveAll(s => s.Pesel == PESEL);
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    return 0;
+                }
+            }
+
+            public void wyswietlKlientow()
+            {
+                foreach (Klient klient in klienci)
+                {
+                    Console.WriteLine(klient);
                 }
             }
         }
@@ -204,13 +271,15 @@ namespace projekt
             public int liczba_miejsc;
             public int zasieg;
             public int numer_seryjny;
+            public int predkosc;
 
-            public Samolot(string typ, int liczba_miejsc, int zasieg, int numer_seryjny)
+            public Samolot(string typ, int liczba_miejsc, int zasieg, int numer_seryjny, int predkosc)
             {
                 this.typ = typ;
                 this.liczba_miejsc = liczba_miejsc;
                 this.zasieg = zasieg;
                 this.numer_seryjny = numer_seryjny;
+                this.predkosc = predkosc;
             }
 
             public override string ToString()
@@ -226,6 +295,7 @@ namespace projekt
             public Lotnisko do_lotniska;
             public double odleglosc;
             public double cenaZaKilometr;
+            public double czas;
             public double cena;
             public string data;
             public string godzina;
@@ -236,6 +306,7 @@ namespace projekt
                     Lotnisko do_lotniska,
                     float cenaZaKilometr,
                     string data,
+                    double czas,
                     string godzina,
                     Samolot samolot)
             {
@@ -246,9 +317,11 @@ namespace projekt
                 this.data = data;
                 this.godzina = godzina;
                 this.samolot = samolot;
+                this.czas = czas;
 
                 policzOdleglosc();
                 policzCene();
+                policzCzaspodrozy();
             }
 
             public void policzOdleglosc()
@@ -258,6 +331,10 @@ namespace projekt
                 double minuty1 = z_lotniska.minuty;
                 double minuty2 = do_lotniska.minuty;
                 this.odleglosc = Math.Round(Math.Sqrt(Math.Pow(stopnie2 - stopnie1, 2) + Math.Pow((Math.Cos((stopnie1 * Math.PI) / 180) * (minuty2 - minuty1)), 2)) * ((40075.704) / 360));
+            }
+            public void policzCzaspodrozy()
+            {
+                this.czas = odleglosc / samolot.predkosc;
             }
 
             public void policzCene()
@@ -361,23 +438,35 @@ namespace projekt
         }
         public class Klient : Kupujacy
         {
-            public string numerKarty;
+            private string numerKarty;
             public string imie;
             public string nazwisko;
-            public string PESEL;
-
-            public Klient(string imie, string nazwisko, string numerKarty, string PESEL)
+            private string pesel;
+            
+            public Klient(string imie, string nazwisko, string numerKarty, string pesel)
             {
                 this.imie = imie;
                 this.nazwisko = nazwisko;
                 this.numerKarty = numerKarty;
-                this.PESEL = PESEL;
+                this.Pesel = pesel;
             }
+            public string Pesel { get { return pesel;  }
+                set { if (value.Length == 11)
+                    {
+                        pesel = value;
+                    }
+                    else
+                    {
+                        pesel = "INCORRECT VALUE";
+                    }
+                }
+            }
+
             public override string ToString()
             {
-                return $"Dane klienta: {imie} {nazwisko}" +
-                     $"nr karty: {numerKarty}" +
-                     $"nr PESEL: {PESEL}"; 
+                return $"Dane klienta: {imie} {nazwisko}\n" +
+                     $"nr karty: {numerKarty}\n" +
+                     $"nr PESEL: { Pesel } "; 
             }
         }
     }
