@@ -10,18 +10,12 @@ namespace projekt
             var firma = new FirmaLotnicza();
             firma.dodajLotnisko("Ragsdale Road Airport", -85.95359802246094, 35.515899658203125);
             firma.dodajLotnisko("San Jacinto Methodist Hospital Heliport", -94.980201, 29.7377);
-            firma.usunLotnisko("Ragsdale Road Airprt"); 
-            firma.wyswietlLotniska();
+            firma.dodajLotnisko("Harnsd", 21, 29.7377);
+            firma.usunLotnisko("Ragsdale Road Airprt");
+            firma.dodajSamolot("BOJING", 1, 13000, 123455234, 100);
 
-            (string nazwaLotniska, double stopnie, double minuty)[] lotniska = new[] { 
-                ("Ragsdale Road Airport", -85.95359802246094, 35.515899658203125), ("Rybolt Ranch Airport", -81.14420318603516, 28.589399337768555), 
-                ("San Jacinto Methodist Hospital Heliport", -94.980201, 29.7377), ("Pickles Airport", -77.9250030518, 39.125),
-                ("Sahoma Lake Airport", -96.1613998413086, 36.04119873046875), ("Brunner Airport", -88.28759765625, 42.13610076904297),
-                ("Nez Perce Municipal Airport", -116.24299621582031, 46.23740005493164), ("Prichard Airstrip", -97.11699676513672, 38.900001525878906),
-                ("Delphi Municipal Airport", -86.68170166015625, 40.54280090332031), ("Hendry County Fire-Ems Heliport", -81.42859649658203, 26.746400833129883)
-            };
-
-            
+            firma.generujLoty(2);
+            firma.wyświetlLoty();
         }
 
         public class FirmaLotnicza
@@ -32,11 +26,36 @@ namespace projekt
             public List<Posrednik> posrednicy = new List<Posrednik>();
             public List<Klient> klienci = new List<Klient>();
             public List<Lotnisko> lotniska = new List<Lotnisko>();
-            
-            /*Zarządzanie lotniskami*/
-            public int generujLoty()
-            {
 
+            /*Zarządzanie lotniskami*/
+
+            /*Dla kazdego samolotu tworzy wszystkie mozliwe dla niego loty*/
+            public void generujLoty(float cenaZaKilometr)
+            {
+                foreach (Samolot samolot in samoloty)
+                {
+                for (int i = 0; i < lotniska.Count; i++)
+                {
+                    for(int j = 0; j < lotniska.Count; j++)
+                    {
+                            var lot = new Lot(lotniska[i], lotniska[j], samolot);
+                            if (lot.policzOdleglosc(lotniska[i], lotniska[j]) < samolot.zasieg && lot.policzOdleglosc(lotniska[i], lotniska[j]) > 0)
+                            {
+                            if (((lot.policzCzaspodrozy(samolot) + 1) * 2) > 24) //jesli czas podrozy > 24h to bedzie to lot cotygodniowy
+                            {
+                                var lot1 = new Lot(lotniska[i], lotniska[j], cenaZaKilometr, DateTime.Now.AddDays(7), samolot);
+                                loty.Add(lot1);
+                            }
+                            else
+                            {
+                                Lot lot1 = new Lot(lotniska[i], lotniska[j], cenaZaKilometr, DateTime.Now.AddDays(1), samolot);
+                                loty.Add(lot1);
+                            }
+                            }
+                    }
+                }
+
+                }
             }
 
             public int dodajLotnisko(string nazwa, double stopnie, double minuty)
@@ -113,14 +132,13 @@ namespace projekt
                     Lotnisko z_lotniska,
                     Lotnisko do_lotniska,
                     float cena,
-                    string data,
                     double czas,
-                    string godzina,
+                    DateTime dataLotu,
                     Samolot samolot)
             {
                 try
                 {
-                    var lot = new Lot(numer_lotu, z_lotniska, do_lotniska, cena, data, czas, godzina, samolot);
+                    var lot = new Lot(z_lotniska, do_lotniska, cena, dataLotu, samolot);
                     loty.Add(lot);
                     return 1;
                 }
@@ -297,46 +315,51 @@ namespace projekt
             public double cenaZaKilometr;
             public double czas;
             public double cena;
-            public string data;
-            public string godzina;
+            public DateTime dataLotu;
             public Samolot samolot;
 
-            public Lot(int numer_lotu,
-                    Lotnisko z_lotniska,
+            public Lot(Lotnisko z_lotniska,
                     Lotnisko do_lotniska,
                     float cenaZaKilometr,
-                    string data,
-                    double czas,
-                    string godzina,
+                    DateTime dataLotu,
                     Samolot samolot)
             {
-                this.numer_lotu = numer_lotu;
+                this.numer_lotu = this.GetHashCode();
                 this.z_lotniska = z_lotniska;
                 this.do_lotniska = do_lotniska;
                 this.cenaZaKilometr = cenaZaKilometr;
-                this.data = data;
-                this.godzina = godzina;
+                this.dataLotu = dataLotu;
+                this.odleglosc = policzOdleglosc(z_lotniska, do_lotniska);
+                this.czas = policzCzaspodrozy(samolot);
                 this.samolot = samolot;
-                this.czas = czas;
-
-                policzOdleglosc();
+                
                 policzCene();
-                policzCzaspodrozy();
             }
-
-            public void policzOdleglosc()
+            public Lot(Lotnisko z_lotniska, Lotnisko do_lotniska, Samolot samolot)
+            {
+                this.z_lotniska = z_lotniska;
+                this.do_lotniska = do_lotniska;
+                this.odleglosc = policzOdleglosc(z_lotniska, do_lotniska);
+                this.czas = policzCzaspodrozy(samolot);
+                this.samolot = samolot;
+            }
+            public Lot() { }
+            public double policzOdleglosc(Lotnisko z_lotniska, Lotnisko do_lotniska)
             {
                 double stopnie1 = z_lotniska.stopnie;
                 double stopnie2 = do_lotniska.stopnie;
                 double minuty1 = z_lotniska.minuty;
                 double minuty2 = do_lotniska.minuty;
-                this.odleglosc = Math.Round(Math.Sqrt(Math.Pow(stopnie2 - stopnie1, 2) + Math.Pow((Math.Cos((stopnie1 * Math.PI) / 180) * (minuty2 - minuty1)), 2)) * ((40075.704) / 360));
+                return Math.Round(Math.Sqrt(Math.Pow(stopnie2 - stopnie1, 2) + Math.Pow((Math.Cos((stopnie1 * Math.PI) / 180) * (minuty2 - minuty1)), 2)) * ((40075.704) / 360));
             }
-            public void policzCzaspodrozy()
+            public double policzCzaspodrozy()
             {
-                this.czas = odleglosc / samolot.predkosc;
+                return odleglosc / samolot.predkosc;
             }
-
+            public double policzCzaspodrozy(Samolot samolot)
+            {
+                return odleglosc / samolot.predkosc;
+            }
             public void policzCene()
             {
                 this.cena = this.cenaZaKilometr * this.odleglosc;
@@ -348,10 +371,10 @@ namespace projekt
                     $"ID: {numer_lotu}\n" +
                     $"Z: {z_lotniska}\n" +
                     $"DO: {do_lotniska}\n" +
-                    $"Odleglosc: {odleglosc}\n" +
-                    $"Data: {data}\n" +
-                    $"Godzina: {godzina}\n" +
-                    $"Cena: {cena}\n" +
+                    $"Odleglosc: {odleglosc} km\n" +
+                    $"Data: {dataLotu.Date }\n" +
+                    $"Czas: { Math.Round(czas, 2) } h\n" +
+                    $"Cena: {cena} zl\n" +
                     $"Samolot: { samolot }\n";
             }
         }
@@ -404,7 +427,7 @@ namespace projekt
                     $"Imie: {klient.imie}\n" +
                     $"Nazwisko: {klient.nazwisko}\n" +
                     $"Cena: {lot.cena}\n" +
-                    $"Data: {lot.data} {lot.godzina}\n" +
+                    $"Data: {lot.dataLotu.Date} {lot.dataLotu.TimeOfDay}\n" +
                     $"Z {lot.z_lotniska} do {lot.do_lotniska}\n";
             }
         }
