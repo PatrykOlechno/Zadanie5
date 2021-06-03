@@ -13,8 +13,10 @@ namespace projekt
             firma.dodajLotnisko("Harnsd", 21, 29.7377);
             firma.usunLotnisko("Ragsdale Road Airprt");
             firma.dodajSamolot("BOJING", 1, 13000, 123455234, 100);
-
+            firma.dodajSamolot("BOCIAN", 16, 700000, 3425345, 100);
             firma.generujLoty(2);
+            firma.PowielLot(firma.loty[0], 2, 7);
+
             firma.wyświetlLoty();
         }
 
@@ -39,23 +41,25 @@ namespace projekt
                     for(int j = 0; j < lotniska.Count; j++)
                     {
                             var lot = new Lot(lotniska[i], lotniska[j], samolot);
-                            if (lot.policzOdleglosc(lotniska[i], lotniska[j]) < samolot.zasieg && lot.policzOdleglosc(lotniska[i], lotniska[j]) > 0)
+                            if (lot.policzOdleglosc(lotniska[i], lotniska[j]) < samolot.zasieg && lot.policzOdleglosc(lotniska[i], lotniska[j]) > 0) //sprawdza czy samolot sie nadaje
                             {
-                            if (((lot.policzCzaspodrozy(samolot) + 1) * 2) > 24) //jesli czas podrozy > 24h to bedzie to lot cotygodniowy
-                            {
-                                var lot1 = new Lot(lotniska[i], lotniska[j], cenaZaKilometr, DateTime.Now.AddDays(7), samolot);
+                                var lot1 = new Lot(lotniska[i], lotniska[j], cenaZaKilometr, DateTime.Now.AddDays(1), samolot);
                                 loty.Add(lot1);
-                            }
-                            else
-                            {
-                                Lot lot1 = new Lot(lotniska[i], lotniska[j], cenaZaKilometr, DateTime.Now.AddDays(1), samolot);
-                                loty.Add(lot1);
-                            }
                             }
                     }
                 }
-
                 }
+            }
+            /* Tworzy loty dany okres czasu*/
+            public void PowielLot(Lot lot, int ile_lotow, int coIle)
+            {
+                while(ile_lotow > 0)
+                {
+                    var nowy_lot = new Lot(lot.z_lotniska, lot.do_lotniska, lot.cenaZaKilometr, lot.dataLotu.AddDays(coIle*ile_lotow), lot.samolot);
+                    loty.Add(nowy_lot);
+                    ile_lotow--;
+                }
+
             }
 
             public int dodajLotnisko(string nazwa, double stopnie, double minuty)
@@ -128,8 +132,7 @@ namespace projekt
                 }
             }
             /*Zarządzanie lotami*/
-            public int dodajLot(int numer_lotu,
-                    Lotnisko z_lotniska,
+            public int dodajLot(Lotnisko z_lotniska,
                     Lotnisko do_lotniska,
                     float cena,
                     double czas,
@@ -320,7 +323,7 @@ namespace projekt
 
             public Lot(Lotnisko z_lotniska,
                     Lotnisko do_lotniska,
-                    float cenaZaKilometr,
+                    double cenaZaKilometr,
                     DateTime dataLotu,
                     Samolot samolot)
             {
