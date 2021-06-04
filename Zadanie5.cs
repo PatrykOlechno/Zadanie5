@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace projekt
 {
@@ -8,16 +11,20 @@ namespace projekt
         static void Main(string[] args)
         {
             var firma = new FirmaLotnicza();
-            firma.dodajLotnisko("Ragsdale Road Airport", -85.95359802246094, 35.515899658203125);
-            firma.dodajLotnisko("San Jacinto Methodist Hospital Heliport", -94.980201, 29.7377);
-            firma.dodajLotnisko("Harnsd", 21, 29.7377);
-            firma.usunLotnisko("Ragsdale Road Airprt");
-            firma.dodajSamolot("BOJING", 1, 13000, 123455234, 100);
-            firma.dodajSamolot("BOCIAN", 16, 700000, 3425345, 100);
+            firma.dodajLotnisko("WARSZZAWA OKENCIE", 20, 30);
+            firma.dodajLotnisko("WARSZZAWA KOPERNIKA", 210, 33);
+            firma.dodajSamolot("BOJING", 20, 30000, 1234, 500);
             firma.generujLoty(2);
-            firma.PowielLot(firma.loty[0], 2, 7);
-
-            firma.wyświetlLoty();
+            firma.zapisDoPliku();
+            Console.WriteLine("PRZED");
+            firma.wyświetlSamoloty();
+            firma.usunLotnisko("WARSZZAWA OKENCIE");
+            firma.usunLotnisko("WARSZZAWA KOPERNIKA");
+            firma.usunSamolot(1234);
+            firma.odczytListZPliku();
+            Console.WriteLine("PO");
+            firma.wyswietlLotniska();
+            firma.wyświetlSamoloty();
         }
 
         public class FirmaLotnicza
@@ -28,6 +35,43 @@ namespace projekt
             public List<Posrednik> posrednicy = new List<Posrednik>();
             public List<Klient> klienci = new List<Klient>();
             public List<Lotnisko> lotniska = new List<Lotnisko>();
+
+
+            /*Zapis list na dysk*/
+            public void zapisDoPliku()
+            {
+
+                var listy = new
+                {
+                    samoloty = samoloty,
+                    loty = loty,
+                    bilety = bilety,
+                    posrednicy = posrednicy,
+                    klienci = klienci,
+                    lotniska = lotniska
+                };
+
+
+                string samolotSerializer = JsonConvert.SerializeObject(listy, Formatting.Indented);
+                TextWriter tw = new StreamWriter("listy.txt");
+
+                tw.WriteLine(samolotSerializer);
+                tw.Close();
+            }
+
+            public void odczytListZPliku()
+            {
+                TextReader tr = new StreamReader("listy.txt");
+                string text = tr.ReadToEnd();
+                var obiekt = JObject.Parse(text); //obiekt do wybierania poszczegolnych tablic
+                var lotniska_obiekt = obiekt["lotniska"].ToString();
+                var samoloty_obiekt = obiekt["samoloty"].ToString();
+
+                lotniska = JsonConvert.DeserializeObject<List<Lotnisko>>(lotniska_obiekt);
+                samoloty = JsonConvert.DeserializeObject<List<Samolot>>(samoloty_obiekt);
+
+                tr.Close();
+            }
 
             /*Zarządzanie lotniskami*/
 
