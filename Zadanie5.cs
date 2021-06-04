@@ -38,9 +38,9 @@ namespace projekt
 
 
             /*Zapis list na dysk*/
-            public void zapisDoPliku()
+            public void zapisDoPliku(string nazwaPliku = "listy.json")
             {
-
+                /*przypisywanie nazw talbicom w jsonie zeby pozniej sie do nich dostac*/
                 var listy = new
                 {
                     samoloty = samoloty,
@@ -50,25 +50,35 @@ namespace projekt
                     klienci = klienci,
                     lotniska = lotniska
                 };
-
-
+                
                 string samolotSerializer = JsonConvert.SerializeObject(listy, Formatting.Indented);
-                TextWriter tw = new StreamWriter("listy.txt");
+                TextWriter tw = new StreamWriter(nazwaPliku);
 
                 tw.WriteLine(samolotSerializer);
                 tw.Close();
             }
 
-            public void odczytListZPliku()
+            public void odczytListZPliku(string nazwaPliku = "listy.json")
             {
-                TextReader tr = new StreamReader("listy.txt");
+                TextReader tr = new StreamReader(nazwaPliku);
                 string text = tr.ReadToEnd();
                 var obiekt = JObject.Parse(text); //obiekt do wybierania poszczegolnych tablic
-                var lotniska_obiekt = obiekt["lotniska"].ToString();
-                var samoloty_obiekt = obiekt["samoloty"].ToString();
 
-                lotniska = JsonConvert.DeserializeObject<List<Lotnisko>>(lotniska_obiekt);
+                /*wybieranie poszczegolncyh tablic*/
+                var samoloty_obiekt = obiekt["samoloty"].ToString();
+                var loty_obiekt = obiekt["loty"].ToString();
+                var bilety_obiekt = obiekt["bilety"].ToString();
+                var posrednicy_obiekt = obiekt["posrednicy"].ToString();
+                var klienci_obiekt = obiekt["klienci"].ToString();
+                var lotniska_obiekt = obiekt["lotniska"].ToString();
+
+                /*zmienianie obiektu jsona w obiekt c#*/
                 samoloty = JsonConvert.DeserializeObject<List<Samolot>>(samoloty_obiekt);
+                loty = JsonConvert.DeserializeObject<List<Lot>>(loty_obiekt);
+                bilety = JsonConvert.DeserializeObject<List<Bilet>>(bilety_obiekt);
+                posrednicy = JsonConvert.DeserializeObject<List<Posrednik>>(posrednicy_obiekt);
+                klienci = JsonConvert.DeserializeObject<List<Klient>>(klienci_obiekt);
+                lotniska = JsonConvert.DeserializeObject<List<Lotnisko>>(lotniska_obiekt);
 
                 tr.Close();
             }
