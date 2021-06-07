@@ -13,6 +13,7 @@ namespace projekt
         {
             FirmaLotnicza firma = new FirmaLotnicza();
             Menu(firma);
+            
         }
 
         private static void Menu(FirmaLotnicza firma)
@@ -260,16 +261,16 @@ namespace projekt
                 }
             }
             /*Zarządzanie lotami*/
-            public int dodajLot(Lotnisko z_lotniska,
-                    Lotnisko do_lotniska,
-                    float cena,
-                    double czas,
-                    DateTime dataLotu,
-                    Samolot samolot)
+            public int dodajLot(int z_lotniska,
+                    int do_lotniska,
+                    double cenaZakilomentr,
+                    string dataLotu,
+                    int numer_seryjny,
+                    FirmaLotnicza firma)
             {
                 try
                 {
-                    var lot = new Lot(z_lotniska, do_lotniska, cena, dataLotu, samolot);
+                    var lot = new Lot(z_lotniska, do_lotniska, cenaZakilomentr, dataLotu, numer_seryjny, firma);
                     loty.Add(lot);
                     return 1;
                 }
@@ -449,6 +450,8 @@ namespace projekt
             public DateTime dataLotu;
             public Samolot samolot;
 
+
+           
             public Lot(Lotnisko z_lotniska,
                     Lotnisko do_lotniska,
                     double cenaZaKilometr,
@@ -466,6 +469,30 @@ namespace projekt
 
                 policzCene();
             }
+
+            //konstruktor do znaleznia samolotu po jego id
+            public Lot(int id_z, int id_do, double cenaZaKilometr, string dataLotu, int idSamolotu, FirmaLotnicza firma)
+            {
+                this.numer_lotu = this.GetHashCode();
+                this.z_lotniska = jakie_lotnisko(id_z, firma);
+                this.do_lotniska = jakie_lotnisko(id_do, firma);
+                this.cenaZaKilometr = cenaZaKilometr;
+                this.dataLotu = Convert.ToDateTime(dataLotu);
+                this.odleglosc = policzOdleglosc(jakie_lotnisko(id_z, firma), jakie_lotnisko(id_do, firma));
+                this.czas = policzCzaspodrozy(jaki_samolot(idSamolotu, firma));
+                this.samolot = jaki_samolot(idSamolotu, firma);
+            }
+            
+
+            public Lotnisko jakie_lotnisko(int id, FirmaLotnicza firma)
+            {
+                return firma.lotniska.Find(x => x.idLotniska == id);
+            }
+            public Samolot jaki_samolot(int numer_seryjny, FirmaLotnicza firma)
+            {
+                return firma.samoloty.Find(x => x.numer_seryjny == numer_seryjny);
+            }
+
             public Lot(Lotnisko z_lotniska, Lotnisko do_lotniska, Samolot samolot)
             {
                 this.z_lotniska = z_lotniska;
@@ -515,17 +542,19 @@ namespace projekt
             public string nazwaLotniska;
             public double stopnie;
             public double minuty; //polozenie geograficzne
+            public int idLotniska;
 
             public Lotnisko(string nazwaLotniska, double stopnie, double minuty)
             {
                 this.nazwaLotniska = nazwaLotniska;
                 this.stopnie = stopnie;
                 this.minuty = minuty;
+                this.idLotniska = this.GetHashCode();
             }
 
             public override string ToString()
             {
-                return $"{nazwaLotniska}. Polozenie: {stopnie}° {minuty}′";
+                return $"{nazwaLotniska}. Polozenie: {stopnie}° {minuty}′. ID: {idLotniska}";
             }
         }
 

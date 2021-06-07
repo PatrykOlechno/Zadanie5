@@ -94,7 +94,7 @@ namespace ZarzadzanieLotniskiem.panele
                         Console.Clear();
                         firma.wyświetlSamoloty();
                         break;
-                    case 4:
+                    case 9:
                         Console.Clear();
                         kontynuuj = false;
                         break;
@@ -124,11 +124,13 @@ namespace ZarzadzanieLotniskiem.panele
                 {
                     case 1:
                         Console.Clear();
-                        Console.WriteLine("Podaj typ, liczbe miejsc, zasieg, numer seryjny oraz predkosc. (W jednej linii po przecinku)");
+                        firma.wyświetlSamoloty();
+                        firma.wyswietlLotniska();
+                        Console.WriteLine("Podaj id lotniska startu, id lotniska lądowania, cene za kilometr, date lotu i numer seryjny samolotu (W jednej linii po przecinku)");
                         string[] toSplit = Console.ReadLine().Split(',');
-                        if (toSplit.Length == 6)
+                        if (toSplit.Length == 5)
                         {
-                           
+                            firma.dodajLot(Convert.ToInt32(toSplit[0]), Convert.ToInt32(toSplit[1]), Convert.ToInt32(toSplit[2]), toSplit[3], Convert.ToInt32(toSplit[4]), firma);
                         }
                         else
                         {
@@ -137,17 +139,18 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     case 2:
                         Console.Clear();
-                        firma.wyświetlSamoloty();
-                        Console.WriteLine("Podaj numer seryjny samolotu do usuniecia");
-                        firma.usunSamolot(Convert.ToInt32(Console.ReadLine()));
+                        firma.wyświetlLoty();
+                        Console.WriteLine("Podaj numer lotu do usunięcia");
+                        firma.usunLot(Convert.ToInt32(Console.ReadLine()));
                         break;
                     case 3:
                         Console.Clear();
-                        firma.wyświetlSamoloty();
+                        firma.wyświetlLoty();
                         break;
                     case 4:
                         Console.Clear();
-                        firma.wyświetlSamoloty();
+                        Console.WriteLine("Podaj cene za kilometr dla tych lotow");
+                        firma.generujLoty(Convert.ToInt32(Console.ReadLine()));
                         break;
                     case 9:
                         Console.Clear();
