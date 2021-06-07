@@ -29,6 +29,7 @@ namespace ZarzadzanieLotniskiem.panele
                         if (toSplit.Length == 3)
                         {
                             firma.dodajLotnisko(toSplit[0], Convert.ToDouble(toSplit[1]), Convert.ToDouble(toSplit[2]));
+                            Console.WriteLine("Dodano");
                         }
                         else
                         {
@@ -51,7 +52,7 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     default:
                         Console.Clear();
-                        Console.WriteLine("Nierpawidlowo cos tma ble");
+                        Console.WriteLine("Nierpawidlowo wartosc");
                         break;
                 }
             }
@@ -78,6 +79,7 @@ namespace ZarzadzanieLotniskiem.panele
                         if (toSplit.Length == 5)
                         {
                             firma.dodajSamolot(toSplit[0], Convert.ToInt32(toSplit[1]), Convert.ToInt32(toSplit[2]), Convert.ToInt32(toSplit[3]), Convert.ToInt32(toSplit[4]));
+                            Console.WriteLine("Dodano");
                         }
                         else
                         {
@@ -86,9 +88,17 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     case 2:
                         Console.Clear();
-                        firma.wyświetlSamoloty();
-                        Console.WriteLine("Podaj numer seryjny samolotu do usuniecia");
-                        firma.usunSamolot(Convert.ToInt32(Console.ReadLine()));
+                        try
+                        {
+                            firma.wyświetlSamoloty();
+                            Console.WriteLine("Podaj numer seryjny samolotu do usuniecia");
+                            firma.usunSamolot(Convert.ToInt32(Console.ReadLine()));
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Nie udalo sie usunac.. sprobuj ponownie");
+                        }
+
                         break;
                     case 3:
                         Console.Clear();
@@ -100,7 +110,7 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     default:
                         Console.Clear();
-                        Console.WriteLine("Nierpawidlowo cos tma ble");
+                        Console.WriteLine("Nierpawidlowa wartosc");
                         break;
                 }
             }
@@ -113,8 +123,9 @@ namespace ZarzadzanieLotniskiem.panele
             {
                 Console.WriteLine("1. Dodaj Lot");
                 Console.WriteLine("2. Usun Lot");
-                Console.WriteLine("3. Wyswietl Loty");
-                Console.WriteLine("4. Generuj wszystkie mozliwe loty");
+                Console.WriteLine("3. Powiel lot");
+                Console.WriteLine("4. Wyswietl Loty");
+                Console.WriteLine("5. Generuj wszystkie mozliwe loty");
                 Console.WriteLine("9. Powrot");
 
                 int switch_on = int.Parse(Console.ReadLine());
@@ -131,6 +142,7 @@ namespace ZarzadzanieLotniskiem.panele
                         if (toSplit.Length == 5)
                         {
                             firma.dodajLot(Convert.ToInt32(toSplit[0]), Convert.ToInt32(toSplit[1]), Convert.ToInt32(toSplit[2]), toSplit[3], Convert.ToInt32(toSplit[4]), firma);
+                            Console.WriteLine("Dodano");
                         }
                         else
                         {
@@ -139,18 +151,57 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     case 2:
                         Console.Clear();
-                        firma.wyświetlLoty();
-                        Console.WriteLine("Podaj numer lotu do usunięcia");
-                        firma.usunLot(Convert.ToInt32(Console.ReadLine()));
+                        try
+                        {
+                            firma.wyświetlLoty();
+                            Console.WriteLine("Podaj numer lotu do usunięcia");
+                            firma.usunLot(Convert.ToInt32(Console.ReadLine()));
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Nie udalo sie usunac");
+                        }
+
                         break;
                     case 3:
                         Console.Clear();
-                        firma.wyświetlLoty();
+                        try
+                        {
+                            firma.wyświetlLoty();
+                            Console.WriteLine("Podaj numer lotu do powielania, co ile powtarzac oraz ile lotow utowrzyc (w jendnej linii, oddzielone przecinkami)");
+                            string[] toSplit2 = Console.ReadLine().Split(',');
+                            if (toSplit2.Length == 3)
+                            {
+                                firma.PowielLot(Convert.ToInt32(toSplit2[0]), Convert.ToInt32(toSplit2[1]), Convert.ToInt32(toSplit2[2]), firma);
+                                Console.WriteLine("Powielono");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Nieprawidlowy format");
+                            }
+                            
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Nie udalo sie powielic lotu");
+                        }
                         break;
                     case 4:
                         Console.Clear();
+                        firma.wyświetlLoty();
+                        break;
+                    case 5:
+                        Console.Clear();
                         Console.WriteLine("Podaj cene za kilometr dla tych lotow");
-                        firma.generujLoty(Convert.ToInt32(Console.ReadLine()));
+                        try
+                        {
+                            firma.generujLoty(Convert.ToDouble(Console.ReadLine()));
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Nieprawidlowy format");
+                        }
+                        
                         break;
                     case 9:
                         Console.Clear();
@@ -158,7 +209,7 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     default:
                         Console.Clear();
-                        Console.WriteLine("Nierpawidlowo cos tma ble");
+                        Console.WriteLine("Nierpawidlowa wartosc");
                         break;
                 }
             }
@@ -185,6 +236,7 @@ namespace ZarzadzanieLotniskiem.panele
                         if (toSplit.Length == 3)
                         {
                             firma.dodajPosrednika(toSplit[0], toSplit[1], toSplit[2]);
+                            Console.WriteLine("Dodano");
                         }
                         else
                         {
@@ -193,9 +245,17 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     case 2:
                         Console.Clear();
-                        firma.wyswietlPosrednikow();
-                        Console.WriteLine("Podaj NIP posrednika do usuniecia");
-                        firma.UsunPosrednika(Console.ReadLine());
+                        try
+                        {
+                            firma.wyswietlPosrednikow();
+                            Console.WriteLine("Podaj NIP posrednika do usuniecia");
+                            firma.UsunPosrednika(Console.ReadLine());
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Nie udalo sie usnac");
+                        }
+
                         break;
                     case 3:
                         Console.Clear();
@@ -207,7 +267,7 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     default:
                         Console.Clear();
-                        Console.WriteLine("Nierpawidlowo cos tma ble");
+                        Console.WriteLine("Nierpawidlowa wartosc");
                         break;
                 }
             }
@@ -234,6 +294,7 @@ namespace ZarzadzanieLotniskiem.panele
                         if (toSplit.Length == 5)
                         {
                             firma.dodajKlienta(toSplit[0], toSplit[1], toSplit[2], toSplit[3], toSplit[4]);
+                            Console.WriteLine("Dodano");
                         }
                         else
                         {
@@ -242,9 +303,17 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     case 2:
                         Console.Clear();
-                        firma.wyswietlKlientow();
-                        Console.WriteLine("Podaj PESEL klienta do usuniecia");
-                        firma.UsunKlienta(Console.ReadLine());
+                        try
+                        {
+                            firma.wyswietlKlientow();
+                            Console.WriteLine("Podaj PESEL klienta do usuniecia");
+                            firma.UsunKlienta(Console.ReadLine());
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Nie udalo sie usunac");
+                        }
+
                         break;
                     case 3:
                         Console.Clear();
@@ -256,11 +325,94 @@ namespace ZarzadzanieLotniskiem.panele
                         break;
                     default:
                         Console.Clear();
-                        Console.WriteLine("Nierpawidlowo cos tma ble");
+                        Console.WriteLine("Nierpawidlowa wartosc");
                         break;
                 }
             }
         }
 
+        public static void panelBilety(FirmaLotnicza firma)
+        {
+            bool kontynuuj = true;
+            while (kontynuuj)
+            {
+                Console.WriteLine("1. Rezerwuj indywidualnie");
+                Console.WriteLine("2. Rezerwuj przez posrednika");
+                Console.WriteLine("3. Cofnij rezerwacje biletu");
+                Console.WriteLine("4. Wyswietl Wszystkie Bilety");
+                Console.WriteLine("9. Powrot");
+
+                int switch_on = int.Parse(Console.ReadLine());
+
+                switch (switch_on)
+                {
+                    case 1:
+                        Console.Clear();
+                        try
+                        {
+                            firma.wyświetlLoty();
+                            firma.wyswietlKlientow();
+                            Console.WriteLine("Podaj id lotu i PESEL klienta(W jednej linii po przecinku)");
+                            string[] toSplit = Console.ReadLine().Split(',');
+                            if (toSplit.Length == 2)
+                            {
+                                firma.rezerwojBilet(Convert.ToInt32(toSplit[0]), toSplit[1], "brak posrednika", firma);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Nieprawidlowy format, sprobuj jeszcze raz");
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Nie udalo sie dodac biletu");
+                        }
+                       
+                        break;
+                    case 2:
+                        Console.Clear();
+                        try
+                        {
+                            firma.wyświetlLoty();
+                            firma.wyswietlKlientow();
+                            firma.wyswietlPosrednikow();
+                            Console.WriteLine("Podaj id lotu, PESEL klienta i NIP posrednika (W jednej linii po przecinku)");
+                            string[] toSplit1 = Console.ReadLine().Split(',');
+                            if (toSplit1.Length == 3)
+                            {
+                                firma.rezerwojBilet(Convert.ToInt32(toSplit1[0]), toSplit1[1], toSplit1[2], firma);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Nieprawidlowy format, sprobuj jeszcze raz");
+                            }
+                            }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("Cos poszlo nie tak. Czy taki obiekt na pewno istnieje? Sprobuj jeszcze raz...");
+                        }
+
+                        break;
+                    case 3:
+                        Console.Clear();
+                        firma.wyswietlZarezerwowaneBilety();
+                        Console.WriteLine("Podaj id biletu do usuniecia");
+                        firma.usunBilet(Convert.ToInt32(Console.ReadLine()));
+                        break;
+                    case 4:
+                        Console.Clear();
+                        firma.wyswietlZarezerwowaneBilety();
+                        break;
+                    case 9:
+                        Console.Clear();
+                        kontynuuj = false;
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("Nieprawidlowa wartosc");
+                        break;
+                }
+            }
+        }
     }
 }
