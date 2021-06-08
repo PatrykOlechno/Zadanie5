@@ -12,8 +12,10 @@ namespace projekt
         static void Main(string[] args)
         {
             FirmaLotnicza firma = new FirmaLotnicza();
-            firma.dodajPosrednika("brak posrednika", "Adres firmy", "NIP firmy"); //dla rezerwacji bezposrednich
+
+            firma.dodajPosrednika("brak posrednika", "Adres siedziby", "1111");
             Menu(firma);
+
 /*            firma.dodajSamolot("Boimg", 21, 2100, 1234, 700);
             firma.dodajLotnisko("Warwa", 21, 21);
             firma.dodajLotnisko("Bial", 22, 21);
@@ -118,17 +120,17 @@ namespace projekt
                     var listy = new
                     {
                         samoloty = samoloty,
-                        loty = loty,
-                        bilety = bilety,
+                        lotniska = lotniska,
                         posrednicy = posrednicy,
                         klienci = klienci,
-                        lotniska = lotniska
+                        loty = loty,
+                        bilety = bilety
                     };
 
-                    string samolotSerializer = JsonConvert.SerializeObject(listy, Formatting.Indented);
+                    string serializer = JsonConvert.SerializeObject(listy, Formatting.Indented);
                     TextWriter tw = new StreamWriter(nazwaPliku);
 
-                    tw.WriteLine(samolotSerializer);
+                    tw.WriteLine(serializer);
                     tw.Close();
                 }
                 catch (Exception ex)
@@ -139,6 +141,7 @@ namespace projekt
             }
 
             public void odczytListZPliku(string nazwaPliku = "listy.json")
+
             {
                 try
                 {
@@ -148,19 +151,23 @@ namespace projekt
 
                     /*wybieranie poszczegolncyh tablic*/
                     var samoloty_obiekt = obiekt["samoloty"].ToString();
-                    var loty_obiekt = obiekt["loty"].ToString();
-                    var bilety_obiekt = obiekt["bilety"].ToString();
+                    var lotniska_obiekt = obiekt["lotniska"].ToString();
                     var posrednicy_obiekt = obiekt["posrednicy"].ToString();
                     var klienci_obiekt = obiekt["klienci"].ToString();
-                    var lotniska_obiekt = obiekt["lotniska"].ToString();
+                    var loty_obiekt = obiekt["loty"].ToString();
+                    var bilety_obiekt = obiekt["bilety"].ToString();
+
+
 
                     /*zmienianie obiektu jsona w obiekt c#*/
                     samoloty = JsonConvert.DeserializeObject<List<Samolot>>(samoloty_obiekt);
-                    loty = JsonConvert.DeserializeObject<List<Lot>>(loty_obiekt);
-                    bilety = JsonConvert.DeserializeObject<List<Bilet>>(bilety_obiekt);
+                    lotniska = JsonConvert.DeserializeObject<List<Lotnisko>>(lotniska_obiekt);
                     posrednicy = JsonConvert.DeserializeObject<List<Posrednik>>(posrednicy_obiekt);
                     klienci = JsonConvert.DeserializeObject<List<Klient>>(klienci_obiekt);
-                    lotniska = JsonConvert.DeserializeObject<List<Lotnisko>>(lotniska_obiekt);
+                    loty = JsonConvert.DeserializeObject<List<Lot>>(loty_obiekt);
+                    bilety = JsonConvert.DeserializeObject<List<Bilet>>(bilety_obiekt);
+
+
 
                     tr.Close();
                 }

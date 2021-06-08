@@ -196,6 +196,7 @@ namespace ZarzadzanieLotniskiem.panele
                         try
                         {
                             firma.generujLoty(Convert.ToDouble(Console.ReadLine()));
+                            Console.WriteLine("Dodano");
                         }
                         catch (Exception)
                         {
@@ -289,17 +290,25 @@ namespace ZarzadzanieLotniskiem.panele
                 {
                     case 1:
                         Console.Clear();
-                        Console.WriteLine("Podaj nazwisko, imie, numer karty, PESEL oraz adres. (W jednej linii po przecinku)");
-                        string[] toSplit = Console.ReadLine().Split(',');
-                        if (toSplit.Length == 5)
+                        try
                         {
-                            firma.dodajKlienta(toSplit[0], toSplit[1], toSplit[2], toSplit[3], toSplit[4]);
-                            Console.WriteLine("Dodano");
+                            Console.WriteLine("Podaj nazwisko, imie, numer karty, PESEL oraz adres. (W jednej linii po przecinku)");
+                            string[] toSplit = Console.ReadLine().Split(',');
+                            if (toSplit.Length == 5)
+                            {
+                                firma.dodajKlienta(toSplit[0], toSplit[1], toSplit[2], toSplit[3], toSplit[4]);
+                                Console.WriteLine("Dodano");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Nieprawidlowy format, sprobuj jeszcze raz");
+                            }
                         }
-                        else
+                        catch (Exception)
                         {
-                            Console.WriteLine("Nieprawidlowy format, sprobuj jeszcze raz");
+                            Console.WriteLine("Nie udalo sie dodac klienta");
                         }
+
                         break;
                     case 2:
                         Console.Clear();
@@ -356,7 +365,7 @@ namespace ZarzadzanieLotniskiem.panele
                             string[] toSplit = Console.ReadLine().Split(',');
                             if (toSplit.Length == 2)
                             {
-                                firma.rezerwojBilet(Convert.ToInt32(toSplit[0]), toSplit[1], "brak posrednika", firma);
+                                firma.rezerwojBilet(Convert.ToInt32(toSplit[0]), toSplit[1], "1111", firma);
                             }
                             else
                             {
